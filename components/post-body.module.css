@@ -1,0 +1,53 @@
+.article {
+    color: theme('colors.gray.300');
+  }
+  
+  .article :global(h1),
+  .article :global(h2),
+  .article :global(h3),
+  .article :global(h4),
+  .article :global(h5),
+  .article :global(h6) {
+    color: theme('colors.gray.300');
+  }
+  
+  .article :global(p),
+  .article :global(ul),
+  .article :global(ol),
+  .article :global(li) {
+    color: theme('colors.gray.300');
+  }
+  
+  :global(.dark) .article {
+    color: theme('colors.gray.100');
+  }
+  
+  :global(.dark) .article :global(h1),
+  :global(.dark) .article :global(h2),
+  :global(.dark) .article :global(h3),
+  :global(.dark) .article :global(h4),
+  :global(.dark) .article :global(h5),
+  :global(.dark) .article :global(h6) {
+    color: theme('colors.gray.100');
+  }
+  
+  :global(.dark) .article :global(p),
+  :global(.dark) .article :global(ul),
+  :global(.dark) .article :global(ol),
+  :global(.dark) .article :global(li) {
+    color: theme('colors.gray.100');
+  }
+  
+  /* Add specific styles for other elements */
+  .article :global(a) {
+    color: theme('colors.primary');
+  }
+  
+  .article :global(blockquote) {
+    color: theme('colors.gray.700');
+    border-left-color: theme('colors.primary');
+  }
+  
+  :global(.dark) .article :global(blockquote) {
+    color: theme('colors.gray.300');
+  }

@@ -1,5 +1,5 @@
-import {nextui} from '@nextui-org/theme';
-import type { Config } from "tailwindcss"
+import { nextui } from "@nextui-org/theme";
+import type { Config } from "tailwindcss";
 
 const config = {
   darkMode: ["class"],
@@ -8,7 +8,7 @@ const config = {
     "./components/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
-    "./node_modules/@nextui-org/theme/dist/components/(autocomplete|button|ripple|spinner|input|listbox|divider|popover|scroll-shadow).js"
+    "./node_modules/@nextui-org/theme/dist/components/(autocomplete|button|ripple|spinner|input|listbox|divider|popover|scroll-shadow).js",
   ],
   prefix: "",
   theme: {
@@ -34,9 +34,32 @@ const config = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      colors: {
+        primary: "#E67E22",
+        secondary: "#D35400",
+        accent: "#F39C12",
+        background: "#2d1810",
+        darkBg: "#2D1810",
+      },
+      typography: {
+        DEFAULT: {
+          css: {
+            "code::before": {
+              content: '""',
+            },
+            "code::after": {
+              content: '""',
+            },
+          },
+        },
+      },
     },
   },
-  plugins: [require("tailwindcss-animate"),nextui()],
-} satisfies Config
+  plugins: [
+    require("tailwindcss-animate"),
+    nextui(),
+    require("@tailwindcss/typography"),
+  ],
+} satisfies Config;
 
-export default config
+export default config;

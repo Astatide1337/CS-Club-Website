@@ -29,6 +29,7 @@ import {
 import { useRouter } from "next/router";
 const fs = require("fs");
 const path = require("path");
+import { getAllPosts, getPostBySlug } from "./api/api";
 {
   /* 
   TODO:
@@ -75,26 +76,26 @@ export default function Home() {
     ArtificialIntelligence: [],
   };
 
-  useEffect(() => {
-    const fetchResources = async () => {
-      try {
-        const response = await fetch("/api/resources");
-        const data: RESOURCES = await response.json();
-        setResources(data);
-      } catch (error) {
-        console.error("Error fetching resources:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchResources = async () => {
+  //     try {
+  //       const response = await fetch("/api/resources");
+  //       const data: RESOURCES = await response.json();
+  //       setResources(data);
+  //     } catch (error) {
+  //       console.error("Error fetching resources:", error);
+  //     }
+  //   };
 
-    fetchResources();
-  }, []);
+  //   fetchResources();
+  // }, []);
 
   function loadResource(filename: string, subteam: string) {
-    router.push(
-      `http://localhost:3000/Resources/${subteam}/${filename
-        .replace(".mdx", "")
-        .replace(" ", "")}`
-    );
+    // router.push(
+    //   `http://localhost:3000/Resources/${subteam}/${filename
+    //     .replace(".mdx", "")
+    //     .replace(" ", "")}`
+    // );
   }
 
   const navItems = [
@@ -192,12 +193,12 @@ export default function Home() {
   ];
 
   const images = [
-    "https://tse2.mm.bing.net/th?id=OIG3.2DwNx4cdNg4FIwqHgich&pid=ImgGn", // Competitve Programming
-    "https://tse1.mm.bing.net/th?id=OIG4.l61AZ_DbIIHF1DgCSros&pid=ImgGn", // App Dev
-    "https://tse3.mm.bing.net/th?id=OIG1.qpmQgUNDoHuuATMHWM7w&pid=ImgGn", // Cyber security
-    "https://tse4.mm.bing.net/th?id=OIG4.QzdhG4jxbK0myMxuj7tr&pid=ImgGn", // Game Dev
-    "https://tse2.mm.bing.net/th?id=OIG3.HH_nzKP4jH11b0q7AcRo&pid=ImgGn", // Web Dev
-    "https://tse4.mm.bing.net/th?id=OIG3.OBsW.s.Gt5hEPUGTQ3cK&pid=ImgGn", // A.I.
+    "https://picsum.photos/1920/1080?random", // Competitve Programming
+    "https://picsum.photos/1920/1080?random", // App Dev
+    "https://picsum.photos/1920/1080?random", // Cyber security
+    "https://picsum.photos/1920/1080?random", // Game Dev
+    "https://picsum.photos/1920/1080?random", // Web Dev
+    "https://picsum.photos/1920/1080?random", // A.I.
   ];
 
   const about = [
@@ -342,7 +343,7 @@ export default function Home() {
     {
       category: "Website Development",
       title: "Create websites that connect the world.",
-      src: "https://msoft.af/wp-content/uploads/2023/12/software-1.gif",
+      src: "https://www.binarycode.co.nz/wp-content/uploads/2022/10/web-development.gif",
       content: <WebDevSubteamInfo />,
     },
     {
@@ -622,7 +623,7 @@ export default function Home() {
                 </ModalTrigger>
                 <ModalBody>
                   <ModalContent className="bg-[--delftblue]">
-                    <h4 className="text-lg md:text-2xl text-[--platinum] dark:text-neutral-100 font-bold text-center mb-8">
+                  <h4 className="text-lg md:text-2xl font-bold text-center mb-8">
                       {" "}
                       <span className="px-1 py-0.5 rounded-md bg-[--pompnpower] dark:bg-neutral-800 dark:border-[--gunmetal] border border-[--gunmetal]">
                         About
@@ -665,12 +666,19 @@ export default function Home() {
                       >
                         {about.map((content, idx) => (
                           <AccordionItem
-                            className="text-[--platinum]"
+                            className="text-[--platinum] "
                             key={idx} // Use idx for a unique key
                             aria-label={`${content.title}`} // Dynamic aria-label
                             title={`${content.title}`} // Dynamic title
+                            subtitle={
+                              <div className="text-[--platinum]">
+                                <span className="px-1 py-0.5 rounded-md bg-[--pompnpower] dark:bg-neutral-800 dark:border-[--gunmetal] border border-[--gunmetal]">
+                                  {content.title}
+                                </span>
+                              </div>
+                            }
                           >
-                            {content.text}
+                            
                           </AccordionItem>
                         ))}
                       </Accordion>
@@ -772,7 +780,7 @@ export default function Home() {
                         >
                           <Image
                             src={image}
-                            alt="bali images"
+                            alt="club images"
                             width="300"
                             height="300"
                             className="rounded-lg h-20 w-20 md:h-32 md:w-32 object-cover flex-shrink-0"
@@ -781,7 +789,7 @@ export default function Home() {
                       ))}
                     </div>
                     <div className="py-10 flex flex-wrap gap-x-4 gap-y-6 items-start justify-start max-w-xl mx-auto text-[--platinum]">
-                      <Accordion
+                    <Accordion
                         variant="bordered"
                         className="text-[--platinum]"
                       >
@@ -790,7 +798,11 @@ export default function Home() {
                             className="text-[--platinum]"
                             key={idx} // Use idx for a unique key
                             aria-label={`${content.title}`} // Dynamic aria-label
-                            title={`${content.title}`} // Dynamic title
+                            subtitle={
+                              <div className="text-[--platinum] font-bold text-large w-screen m-2">
+                                {content.title}
+                              </div>
+                            }
                           >
                             {content.text}
                           </AccordionItem>
