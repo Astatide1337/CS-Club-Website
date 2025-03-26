@@ -11,12 +11,12 @@ import {
   ModalBody,
   ModalContent,
   ModalTrigger,
-} from "../components/ui/animated-modal";
+} from "@/components/ui/animated-modal";
 import { motion, animate } from "framer-motion";
 import { Accordion, AccordionItem, Link } from "@nextui-org/react";
 import { Carousel, Card } from "@/components/ui/apple-cards-carousel";
 import { FocusCards } from "@/components/ui/focus-cards";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { FloatingDock } from "@/components/ui/floating-dock";
 import { useSession, signIn, signOut } from "next-auth/react";
@@ -30,6 +30,10 @@ import { useRouter } from "next/router";
 const fs = require("fs");
 const path = require("path");
 import { getAllPosts, getPostBySlug } from "./api/api";
+import { Post } from "@/interfaces/post";
+import { GetServerSideProps } from "next";
+import { PostPreview } from "@/components/post-preview";
+import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 {
   /* 
   TODO:
@@ -38,65 +42,41 @@ import { getAllPosts, getPostBySlug } from "./api/api";
 */
 }
 
-type RESOURCES = {
-  AppDevelopment: string[];
-  WebsiteDevelopment: string[];
-  GameDevelopment: string[];
-  Cybersecurity: string[];
-  CompetitiveProgramming: string[];
-  ArtificialIntelligence: string[];
+type Props = {
+  posts: Post;
 };
 
-export default function Home() {
+export default function Home({ posts }: Props) {
   const { data: session } = useSession();
   const router = useRouter();
 
-  const [resources, setResources] = useState<RESOURCES>({
-    AppDevelopment: [],
-    WebsiteDevelopment: [],
-    GameDevelopment: [],
-    Cybersecurity: [],
-    CompetitiveProgramming: [],
-    ArtificialIntelligence: [],
-  });
-
-  const RESOURCES: {
-    AppDevelopment: string[];
-    WebsiteDevelopment: string[];
-    GameDevelopment: string[];
-    Cybersecurity: string[];
-    CompetitiveProgramming: string[];
-    ArtificialIntelligence: string[];
-  } = {
-    AppDevelopment: [],
-    WebsiteDevelopment: [],
-    GameDevelopment: [],
-    Cybersecurity: [],
-    CompetitiveProgramming: [],
-    ArtificialIntelligence: [],
-  };
-
-  // useEffect(() => {
-  //   const fetchResources = async () => {
-  //     try {
-  //       const response = await fetch("/api/resources");
-  //       const data: RESOURCES = await response.json();
-  //       setResources(data);
-  //     } catch (error) {
-  //       console.error("Error fetching resources:", error);
-  //     }
-  //   };
-
-  //   fetchResources();
-  // }, []);
-
-  function loadResource(filename: string, subteam: string) {
-    // router.push(
-    //   `http://localhost:3000/Resources/${subteam}/${filename
-    //     .replace(".mdx", "")
-    //     .replace(" ", "")}`
-    // );
-  }
+  const [news, setNews] = useState({ articles: [] });
+  useEffect(() => {
+    // News API from https://newsdata.io/ if needed in the future depending on site traffic create multiple API keys (200 requests/day)
+    const fetchNews = async () => {
+      try {
+        const response = await fetch(
+          `https://newsapi.org/v2/everything?q=technology&sortBy=popularity&apiKey=${process.env.NEXT_PUBLIC_NEWS_API_KEY}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch news");
+        }
+        const data = await response.json();
+        setNews({
+          ...data,
+          articles: data.articles.slice(0, 10).map((article: any) => ({
+            quote: article.description,
+            name: article.source.name || "Unknown",
+            title: article.title || "No title available",
+          })),
+        });
+      } catch (error) {
+        console.error("Error fetching news:", error);
+      }
+    };
+    fetchNews();
+  }, []);
+  const NEWS = news.articles || [];
 
   const navItems = [
     {
@@ -142,7 +122,7 @@ export default function Home() {
     },
     {
       title: "Contact",
-      href: "#",
+      href: "mailto:hillsboroughcsclub@gmail.com",
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -245,9 +225,15 @@ export default function Home() {
         <div className="bg-[#F5F5F7] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4">
           <p className="text-neutral-600 dark:text-neutral-400 text-base md:text-2xl font-sans max-w-3xl mx-auto">
             <span className="font-bold text-neutral-700 dark:text-neutral-200">
-              Important introductory hook.
+              In today's digital world, cybersecurity is more important than
+              ever. Have you ever wondered how hackers break into systems—or how
+              to stop them?
             </span>{" "}
-            What you will be doing within the subteam.
+            The cybersecurity subteam will explore topics such as ethical
+            hacking, cryptography, and network security. You’ll learn how to
+            protect systems from cyber threats, analyze vulnerabilities, and
+            participate in hands-on challenges like PicoCTF, a cybersecurity
+            competition designed to test and improve your hacking skills.
           </p>
         </div>
       </>
@@ -260,9 +246,14 @@ export default function Home() {
         <div className="bg-[#F5F5F7] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4">
           <p className="text-neutral-600 dark:text-neutral-400 text-base md:text-2xl font-sans max-w-3xl mx-auto">
             <span className="font-bold text-neutral-700 dark:text-neutral-200">
-              Important introductory hook.
+              Almost every service today has an app—but have you ever thought
+              about building one yourself?
             </span>{" "}
-            What you will be doing within the subteam.
+            The app development subteam will focus on designing and coding
+            mobile applications. You’ll learn Java for Android development,
+            explore UI/UX design principles, and create functional apps that
+            solve real-world problems. By the end, you'll have hands-on
+            experience building and deploying apps on Android devices.
           </p>
         </div>
       </>
@@ -275,9 +266,15 @@ export default function Home() {
         <div className="bg-[#F5F5F7] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4">
           <p className="text-neutral-600 dark:text-neutral-400 text-base md:text-2xl font-sans max-w-3xl mx-auto">
             <span className="font-bold text-neutral-700 dark:text-neutral-200">
-              Important introductory hook.
+              Do you enjoy solving puzzles and thinking outside the box?
+              Competitive programming challenges you to think algorithmically
+              and optimize your solutions under time constraints!
             </span>{" "}
-            What you will be doing within the subteam.
+            This subteam will train for competitions like USACO (USA Computing
+            Olympiad) and ACSL (American Computer Science League). You’ll learn
+            problem-solving techniques, advanced algorithms, and efficient
+            coding strategies that will prepare you for coding competitions and
+            technical interviews.
           </p>
         </div>
       </>
@@ -290,9 +287,15 @@ export default function Home() {
         <div className="bg-[#F5F5F7] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4">
           <p className="text-neutral-600 dark:text-neutral-400 text-base md:text-2xl font-sans max-w-3xl mx-auto">
             <span className="font-bold text-neutral-700 dark:text-neutral-200">
-              Important introductory hook.
+              Every website you visit started with just a few lines of code—what
+              if you could build the next great website?
             </span>{" "}
-            What you will be doing within the subteam.
+            The web development subteam will cover both front-end and back-end
+            development. You’ll learn HTML, CSS, and JavaScript to create
+            visually appealing websites, and dive into frameworks and databases
+            to build dynamic, interactive web applications. Whether you want to
+            craft personal blogs or full-fledged platforms, this subteam will
+            give you the tools to bring your ideas to life.
           </p>
         </div>
       </>
@@ -305,9 +308,16 @@ export default function Home() {
         <div className="bg-[#F5F5F7] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4">
           <p className="text-neutral-600 dark:text-neutral-400 text-base md:text-2xl font-sans max-w-3xl mx-auto">
             <span className="font-bold text-neutral-700 dark:text-neutral-200">
-              Important introductory hook.
+              From self-driving cars to chatbots, AI is shaping the future. Want
+              to learn how machines can think and learn like humans?
             </span>{" "}
-            What you will be doing within the subteam.
+            The AI subteam will introduce key concepts like machine learning,
+            neural networks, and deep learning. You’ll work with Python
+            libraries such as TensorFlow and PyTorch to train AI models, analyze
+            data, and build intelligent applications. Whether you’re interested
+            in image recognition, natural language processing, or AI-powered
+            game bots, this subteam will guide you through the world of
+            artificial intelligence.
           </p>
         </div>
       </>
@@ -354,246 +364,9 @@ export default function Home() {
     },
   ];
 
-  const GameDevResource = () => {
-    return (
-      <>
-        <div className="bg-[--delftblue] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4">
-          <div className="flex flex-row justify-center">
-            <Autocomplete
-              label="Game Dev Resources"
-              placeholder="Search for a resource"
-              defaultSelectedKey={"cat"}
-              className="max-w-xs"
-            >
-              {resources?.GameDevelopment?.map((resource) => (
-                <AutocompleteItem
-                  onClick={() => loadResource(resource, "GameDevelopment")}
-                  key={resource}
-                  value={resource.replace(".mdx", "")}
-                >
-                  {resource.replace(".mdx", "")}
-                </AutocompleteItem>
-              ))}
-            </Autocomplete>
-          </div>
-        </div>
-      </>
-    );
-  };
-
-  const CybersecurityResource = () => {
-    return (
-      <>
-        <div className="bg-[--delftblue] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4">
-          <div className="flex flex-row justify-center">
-            <Autocomplete
-              label="Cybersecurity Resources"
-              placeholder="Search for a resource"
-              defaultSelectedKey={"cat"}
-              className="max-w-xs"
-            >
-              {resources?.Cybersecurity?.map((resource) => (
-                <AutocompleteItem
-                  onClick={() => loadResource(resource, "Cybersecurity")}
-                  key={resource}
-                  value={resource.replace(".mdx", "")}
-                >
-                  {resource.replace(".mdx", "")}
-                </AutocompleteItem>
-              ))}
-            </Autocomplete>
-          </div>
-        </div>
-      </>
-    );
-  };
-
-  const AppDevelopmentResource = () => {
-    return (
-      <>
-        <div className="bg-[--delftblue] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4">
-          <div className="flex flex-row justify-center">
-            <Autocomplete
-              label="App Development Resources"
-              placeholder="Search for a resource"
-              defaultSelectedKey={"cat"}
-              className="max-w-xs"
-            >
-              {resources?.AppDevelopment?.map((resource) => (
-                <AutocompleteItem
-                  onClick={() => loadResource(resource, "AppDevelopment")}
-                  key={resource}
-                  value={resource.replace(".mdx", "")}
-                >
-                  {resource.replace(".mdx", "")}
-                </AutocompleteItem>
-              ))}
-            </Autocomplete>
-          </div>
-        </div>
-      </>
-    );
-  };
-
-  const CompetitiveProgrammingResource = () => {
-    return (
-      <>
-        <div className="bg-[--delftblue] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4">
-          <div className="flex flex-row justify-center">
-            <Autocomplete
-              label="Competitive Programming Resources"
-              placeholder="Search for a resource"
-              defaultSelectedKey={"cat"}
-              className="max-w-xs"
-            >
-              {resources?.CompetitiveProgramming?.map((resource) => (
-                <AutocompleteItem
-                  onClick={() =>
-                    loadResource(resource, "CompetitiveProgramming")
-                  }
-                  key={resource}
-                  value={resource.replace(".mdx", "")}
-                >
-                  {resource.replace(".mdx", "")}
-                </AutocompleteItem>
-              ))}
-            </Autocomplete>
-          </div>
-        </div>
-      </>
-    );
-  };
-
-  const WebsiteDevelopmentResource = () => {
-    return (
-      <>
-        <div className="bg-[--delftblue] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4">
-          <div className="flex flex-row justify-center">
-            <Autocomplete
-              label="Website Development Resources"
-              placeholder="Search for a resource"
-              defaultSelectedKey={"cat"}
-              className="max-w-xs"
-            >
-              {resources?.WebsiteDevelopment?.map((resource) => (
-                <AutocompleteItem
-                  onClick={() => loadResource(resource, "WebsiteDevelopment")}
-                  key={resource}
-                  value={resource.replace(".mdx", "")}
-                >
-                  {resource.replace(".mdx", "")}
-                </AutocompleteItem>
-              ))}
-            </Autocomplete>
-          </div>
-        </div>
-      </>
-    );
-  };
-
-  const ArtificialIntelligenceResource = () => {
-    return (
-      <>
-        <div className="bg-[--delftblue] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4">
-          <div className="flex flex-row justify-center">
-            <Autocomplete
-              label="Artificial Intelligence Resources"
-              placeholder="Search for a resource"
-              defaultSelectedKey={"cat"}
-              className="max-w-xs"
-            >
-              {resources?.ArtificialIntelligence?.map((resource) => (
-                <AutocompleteItem
-                  onClick={() =>
-                    loadResource(resource, "ArtificialIntelligence")
-                  }
-                  key={resource}
-                  value={resource.replace(".mdx", "")}
-                >
-                  {resource.replace(".mdx", "")}
-                </AutocompleteItem>
-              ))}
-            </Autocomplete>
-          </div>
-        </div>
-      </>
-    );
-  };
-
-  const resourceInfo = [
-    {
-      category: "Cybersecurity",
-      title: "Learn more about Cybersecurity.",
-      src: "/AddImage.jpg",
-      content: <CybersecurityResource />,
-    },
-    {
-      category: "Game Development",
-      title: "Need help learning game development?",
-      src: "/AddImage.jpg",
-      content: <GameDevResource />,
-    },
-    {
-      category: "App Development",
-      title: "Need a hand in learning about App Development?",
-      src: "/AddImage.jpg",
-      content: <AppDevelopmentResource />,
-    },
-
-    {
-      category: "Competitive Programming",
-      title: "Need strategies to excel in Competitive Programming?",
-      src: "/AddImage.jpg",
-      content: <CompetitiveProgrammingResource />,
-    },
-    {
-      category: "Website Development",
-      title: "Need guidance on Web Development?",
-      src: "/AddImage.jpg",
-      content: <WebsiteDevelopmentResource />,
-    },
-    {
-      category: "Artificial Intelligence",
-      title: "Curious about understanding Artificial Intelligence?",
-      src: "/AddImage.jpg",
-      content: <ArtificialIntelligenceResource />,
-    },
-  ];
-
   const subteamCards = subteamInfo.map((card, index) => (
     <Card key={card.src} card={card} index={index} />
   ));
-
-  const resourceCards = resourceInfo.map((card, index) => (
-    <Card key={card.src} card={card} index={index} />
-  ));
-
-  const projects = [
-    {
-      title: "Student Project",
-      src: "/AddImage.jpg",
-    },
-    {
-      title: "Student Project",
-      src: "/AddImage.jpg",
-    },
-    {
-      title: "Student Project",
-      src: "/AddImage.jpg",
-    },
-    {
-      title: "Student Project",
-      src: "/AddImage.jpg",
-    },
-    {
-      title: "Student Project",
-      src: "/AddImage.jpg",
-    },
-    {
-      title: "Student Project",
-      src: "/AddImage.jpg",
-    },
-  ];
 
   if (session) {
     return (
@@ -610,7 +383,7 @@ export default function Home() {
             <p className="text-[--pompnpower] dark:text-neutral-200 mb-5 text-xl   ">
               Where
               <FlipWords words={nouns} />
-              Turn Into Code. {RESOURCES["GameDevelopment"][0]}
+              Turn Into Code.
             </p>
 
             {/* About Button */}
@@ -623,7 +396,7 @@ export default function Home() {
                 </ModalTrigger>
                 <ModalBody>
                   <ModalContent className="bg-[--delftblue]">
-                  <h4 className="text-lg md:text-2xl font-bold text-center mb-8">
+                    <h4 className="text-lg md:text-2xl font-bold text-center mb-8">
                       {" "}
                       <span className="px-1 py-0.5 rounded-md bg-[--pompnpower] dark:bg-neutral-800 dark:border-[--gunmetal] border border-[--gunmetal]">
                         About
@@ -677,9 +450,7 @@ export default function Home() {
                                 </span>
                               </div>
                             }
-                          >
-                            
-                          </AccordionItem>
+                          ></AccordionItem>
                         ))}
                       </Accordion>
                     </div>
@@ -702,19 +473,58 @@ export default function Home() {
           <Carousel items={subteamCards} />
         </div>
         <div className="w-full h-full">
+          <h2 className="max-w-7xl text-xl md:text-5xl font-bold text-[--periwinkle] dark:text-neutral-200 font-sans">
+            Latest News
+          </h2>
+          <InfiniteMovingCards
+            items={NEWS}
+            className="max-w-9xl"
+            speed="slow"
+            pauseOnHover={true}
+          />
+        </div>
+        <div className="w-full h-full">
           <h2 className="max-w-7xl mb-10 text-xl md:text-5xl font-bold text-[--periwinkle] dark:text-neutral-200 font-sans">
             Student Projects.
           </h2>
-          <FocusCards cards={projects} />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-16">
+            {posts
+              .filter((post: Post) => post.category === "Student Project")
+              .map((post: Post) => (
+                <PostPreview
+                  key={post.slug}
+                  title={post.title}
+                  coverImage={post.coverImage}
+                  date={post.date}
+                  author={post.author}
+                  slug={post.slug}
+                  excerpt={post.excerpt}
+                />
+              ))}
+          </div>
         </div>
         <div className="w-full h-full">
           <h2
             id="Resources"
-            className="max-w-7xl mt-10  text-xl md:text-5xl font-bold text-[--periwinkle] dark:text-neutral-200 font-sans"
+            className="max-w-7xl mt-10 mb-10 text-xl md:text-5xl font-bold text-[--periwinkle] dark:text-neutral-200 font-sans"
           >
             Resources.
           </h2>
-          <Carousel items={resourceCards} />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-16">
+            {posts
+              .filter((post: Post) => post.category === "Resource")
+              .map((post: Post) => (
+                <PostPreview
+                  key={post.slug}
+                  title={post.title}
+                  coverImage={post.coverImage}
+                  date={post.date}
+                  author={post.author}
+                  slug={post.slug}
+                  excerpt={post.excerpt}
+                />
+              ))}
+          </div>
         </div>
       </main>
     );
@@ -789,7 +599,7 @@ export default function Home() {
                       ))}
                     </div>
                     <div className="py-10 flex flex-wrap gap-x-4 gap-y-6 items-start justify-start max-w-xl mx-auto text-[--platinum]">
-                    <Accordion
+                      <Accordion
                         variant="bordered"
                         className="text-[--platinum]"
                       >
@@ -828,21 +638,69 @@ export default function Home() {
           <Carousel items={subteamCards} />
         </div>
         <div className="w-full h-full">
+          <h2 className="max-w-7xl text-xl md:text-5xl font-bold text-[--periwinkle] dark:text-neutral-200 font-sans">
+            Latest News
+          </h2>
+          <InfiniteMovingCards
+            items={NEWS}
+            className="max-w-9xl"
+            speed="slow"
+            pauseOnHover={true}
+          />
+        </div>
+        <div className="w-full h-full">
           <h2 className="max-w-7xl mb-10 text-xl md:text-5xl font-bold text-[--periwinkle] dark:text-neutral-200 font-sans">
             Student Projects.
           </h2>
-          <FocusCards cards={projects} />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-16">
+            {posts
+              .filter((post: Post) => post.category === "Student Project")
+              .map((post: Post) => (
+                <PostPreview
+                  key={post.slug}
+                  title={post.title}
+                  coverImage={post.coverImage}
+                  date={post.date}
+                  author={post.author}
+                  slug={post.slug}
+                  excerpt={post.excerpt}
+                />
+              ))}
+          </div>
         </div>
         <div className="w-full h-full">
           <h2
             id="Resources"
-            className="max-w-7xl mt-10  text-xl md:text-5xl font-bold text-[--periwinkle] dark:text-neutral-200 font-sans"
+            className="max-w-7xl mt-10 mb-10 text-xl md:text-5xl font-bold text-[--periwinkle] dark:text-neutral-200 font-sans "
           >
             Resources.
           </h2>
-          <Carousel items={resourceCards} />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-16">
+            {posts
+              .filter((post: Post) => post.category === "Resource")
+              .map((post: Post) => (
+                <PostPreview
+                  key={post.slug}
+                  title={post.title}
+                  coverImage={post.coverImage}
+                  date={post.date}
+                  author={post.author}
+                  slug={post.slug}
+                  excerpt={post.excerpt}
+                />
+              ))}
+          </div>
         </div>
       </div>
     );
   }
 }
+export const getServerSideProps: GetServerSideProps = async () => {
+  const posts = getAllPosts();
+
+  return {
+    props: {
+      posts,
+    },
+  };
+};

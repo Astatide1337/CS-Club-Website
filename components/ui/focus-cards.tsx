@@ -2,7 +2,7 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
-
+import { useRouter } from "next/router";
 export const Card = React.memo(
   ({
     card,
@@ -48,14 +48,16 @@ Card.displayName = "Card";
 type Card = {
   title: string;
   src: string;
+  slug: string;
 };
 
 export function FocusCards({ cards }: { cards: Card[] }) {
   const [hovered, setHovered] = useState<number | null>(null);
-
+  const router = useRouter();
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-full mx-auto w-full">
       {cards.map((card, index) => (
+        <div key={card.title} onClick={() => router.push(card.slug)}>
         <Card
           key={card.title}
           card={card}
@@ -63,6 +65,7 @@ export function FocusCards({ cards }: { cards: Card[] }) {
           hovered={hovered}
           setHovered={setHovered}
         />
+        </div>
       ))}
     </div>
   );

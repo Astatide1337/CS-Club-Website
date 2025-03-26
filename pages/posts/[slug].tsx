@@ -18,7 +18,7 @@ export default function PostPage({ post, content }: Props) {
     return (
       <main className="min-h-screen bg-background dark:bg-darkBg">
         <Container>
-          <Header />
+          <Header category="404" />
           <div className="text-center py-20">
             <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-4">
               Post not found
@@ -41,7 +41,7 @@ export default function PostPage({ post, content }: Props) {
       <main className="min-h-screen bg-background dark:bg-darkBg pb-16 flex-grow">
         &nbsp;
         <Container>
-          <Header />
+          <Header category={post.category} />
           <article className="mb-32">
             <div className="text-center mb-16 space-y-8">
               <PostTitle>{post.title}</PostTitle>
