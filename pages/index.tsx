@@ -328,7 +328,7 @@ export default function Home({ posts }: Props) {
     {
       category: "Cybersecurity",
       title: "Protect from scammers and cyber criminals.",
-      src: "https://i0.wp.com/www.esearchadvisors.com/blog/wp-content/uploads/2020/02/giphy-5.cyber-security.gif?fit=480%2C360&ssl=1",
+      src: "/subteams/cybersecurity.svg",
       content: <CybersecuritySubteamInfo />,
     },
     {
@@ -340,14 +340,14 @@ export default function Home({ posts }: Props) {
     {
       category: "App Development",
       title: "Build apps that fit in your pocket.",
-      src: "https://hiddenlogics.com/wp-content/uploads/2020/03/iphone-development.gif",
+      src: "/subteams/app-development.svg",
       content: <AppDevSubteamInfo />,
     },
 
     {
       category: "Competitive Programming",
       title: "Learn to be efficient and write effective code.",
-      src: "https://media.licdn.com/dms/image/C4E12AQGqXjmnyuB71g/article-cover_image-shrink_600_2000/0/1624433257039?e=2147483647&v=beta&t=Xm3dRN6delJi5D3Hl8l8ZYJYvUuSvuPzntU5W3KV6dg",
+      src: "/subteams/competitive-programming.svg",
       content: <CompetitiveProgrammingSubteamInfo />,
     },
     {
@@ -359,7 +359,7 @@ export default function Home({ posts }: Props) {
     {
       category: "Artificial Intelligence",
       title: "Automate repetitive and tedious tasks.",
-      src: "https://miro.medium.com/v2/resize:fit:1320/0*fdExI6MR2LFns1uw.gif",
+      src: "/subteams/artificial-intelligence.svg",
       content: <AiSubteamInfo />,
     },
   ];
